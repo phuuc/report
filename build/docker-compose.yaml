@@ -1,0 +1,14 @@
+version: "3.9"
+services:
+  db:
+    image: postgres:14-alpine
+    container_name: rbo-db
+    restart: always
+    environment:
+      - POSTGRES_PASSWORD=rbo
+      - POSTGRES_USER=rbo
+      - POSTGRES_DB=rbo
+    ports:
+      - 5436:5432
+    volumes:
+      - ./:/app
