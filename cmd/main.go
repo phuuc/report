@@ -24,6 +24,11 @@ func main() {
 	sqlDb := db.SetupDB()
 	db.RunMigration()
 
+	redisClient, err := infras.InitRedis(cfg.Redis)
+	if err != nil {
+		return
+	}
+
 	// repo
 	overviewRepo := repo.NewOverviewRepo(sqlDb)
 	flightRepo := repo.NewFlightRepo(sqlDb)
@@ -31,13 +36,13 @@ func main() {
 
 	//usecases
 
-	overviewUc := usecases.NewOverviewUc(overviewRepo)
+	overviewUc := usecases.NewOverviewUc(overviewRepo, redisClient)
 	fligtUc := usecases.NewFlightUc(flightRepo)
 	hotelUc := usecases.NewHotelUc(hotelRepo)
 
 	//handler
 	overviewHandler := handlers.NewHandlers(overviewUc, fligtUc, hotelUc)
-	server := server.NewRouter(cfg, overviewHandler)
+	server := server.NewServer(cfg, overviewHandler)
 	server.Run()
 
 }

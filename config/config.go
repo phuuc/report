@@ -11,9 +11,10 @@ import (
 )
 
 type Config struct {
-	Environment string  `yaml:"environment"`
-	Server      *Server `yaml:"server"`
-	DB          *DB     `yaml:"db"`
+	Environment string       `yaml:"environment"`
+	Server      *Server      `yaml:"server"`
+	DB          *DB          `yaml:"db"`
+	Redis       *RedisConfig `yaml:"redis"`
 }
 
 type Server struct {
@@ -28,6 +29,15 @@ type DB struct {
 	DataSource                 string `yaml:"data_source"`
 	MigrationConnURL           string `yaml:"migration_conn_url"`
 	ConnMaxLifeTimeMiliseconds int64  `yaml:"conn_max_life_time_ms"`
+}
+
+type RedisConfig struct {
+	CacheTime           int    `yaml:"cache_time"`
+	ConnectionURL       string `yaml:"connection_url"`
+	PoolSize            int    `yaml:"pool_size"`
+	DialTimeoutSeconds  int    `yaml:"dial_timeout_seconds"`
+	ReadTimeoutSeconds  int    `yaml:"read_timeout_seconds"`
+	WriteTimeoutSeconds int    `yaml:"write_timeout_seconds"`
 }
 
 func Load(filePath string) (*Config, error) {

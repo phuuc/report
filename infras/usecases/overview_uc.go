@@ -4,27 +4,44 @@ import (
 	"context"
 	"fmt"
 	"log"
+	"strconv"
 
 	"github.com/finnpn/overview/infras/usecases/models"
 	"github.com/finnpn/overview/interfaces/repos"
 	"github.com/finnpn/overview/pkg/helpers"
+	"github.com/go-redis/redis/v9"
 )
 
 type OverviewUc struct {
 	overviewRepos repos.OverviewRepos
+	redisClient   *redis.Client
 }
 
-func NewOverviewUc(overviewRepos repos.OverviewRepos) *OverviewUc {
+func NewOverviewUc(overviewRepos repos.OverviewRepos, redisClient *redis.Client) *OverviewUc {
 	return &OverviewUc{
 		overviewRepos: overviewRepos,
+		redisClient:   redisClient,
 	}
 }
 
 func (u *OverviewUc) GetTotalTrips(ctx context.Context) (int, error) {
-	totalTrips, err := u.overviewRepos.GetTotalTrips(ctx)
-	if err != nil {
-		log.Printf("fail getting total trips with err =%v", err)
-		return 0, fmt.Errorf("fail getting total trips")
+	redisTotal, err := u.redisClient.Get(ctx, "o-total-trips").Result()
+	var totalTrips int
+	if err == redis.Nil {
+		totalTrips, err := u.overviewRepos.GetTotalTrips(ctx)
+		if err != nil {
+			log.Printf("fail getting total trips with err =%v", err)
+			return 0, fmt.Errorf("fail getting total trips")
+		}
+		err = u.redisClient.Set(ctx, "o-total-trips", totalTrips, 0).Err()
+		if err != nil {
+			return 0, err
+		}
+	} else {
+		totalTrips, err = strconv.Atoi(redisTotal)
+		if err != nil {
+			return 0, err
+		}
 	}
 	return totalTrips, nil
 }

@@ -9,12 +9,12 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-type Router struct {
+type Server struct {
 	router *gin.Engine
 	config *config.Config
 }
 
-func NewRouter(cfg *config.Config, handlers *handlers.Handlers) *Router {
+func NewServer(cfg *config.Config, handlers *handlers.Handlers) *Server {
 	router := gin.Default()
 
 	routeOverview := router.Group("/overview")
@@ -26,12 +26,12 @@ func NewRouter(cfg *config.Config, handlers *handlers.Handlers) *Router {
 	routerHotel := router.Group("/hotel")
 	handlers.ConfigureHotels(routerHotel)
 
-	return &Router{
+	return &Server{
 		router: router,
 		config: cfg,
 	}
 }
-func (r *Router) Run() {
+func (r *Server) Run() {
 	s := &http.Server{
 		Addr:    config.Addr(r.config.Server.Host, r.config.Server.Port),
 		Handler: r.router,

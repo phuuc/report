@@ -9,3 +9,11 @@ db:
   max_idle_conns: ${DB_MAX_IDLE_CONNS}
   conn_max_life_time_ms: ${DB_CONN_MAX_LIFE_TIME_MS}
   migration_conn_url: ${DB_MIGRATION_CONN_URL}
+
+redis:
+  cache_time: ${REDIS_CACHE_TIME}
+  connection_url: ${REDIS_CONNECTION_URL}
+  pool_size: ${REDIS_POOL_SIZE}
+  dial_timeout_seconds: ${REDIS_DIAL_TIMEOUT_SECONDS}
+  read_timeout_seconds: ${REDIS_READ_TIMEOUT_SECONDS}
+  write_timeout_seconds: ${REDIS_WRITE_TIMEOUT_SECONDS}
